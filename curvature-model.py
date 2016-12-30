@@ -1,42 +1,35 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from numpy.polynomial import Polynomial as Poly
 
-# Computes the lagrange polynomial for (x_i, y_i)
-def lagrange_interpolate(x, y):
-	if len(x) <= len(y):
-		k = len(x) - 1
-	else:
-		k = len(y) - 1
+def discrete_curvature(f):
 
-	min_x = min(x)
-	max_x = max(x)
-	result = Poly([0],[min_x,max_x],[min_x,max_x]) # Initializing P(x) = 0
+	k = np.zeros((1,f.shape[1]))
 
-	for j in range(0,k+1):
-		numerator = Poly([1],[min_x,max_x],[min_x,max_x])
-		denominator = 1.0
-		for m in range(0,k+1):
-			if m != j:
-				numerator *= Poly([-x[m],1],[min_x,max_x],[min_x,max_x])
-				denominator *= x[j]-x[m]
-		result += (numerator/denominator)*y[j]
+	for i in range(f.shape[1]-2):
+		df_1 = f[:,i+1]-f[:,i]
+		ds_1 = np.sqrt(sum(df_1**2))
+		df_2 = f[:,i+2]-f[:,i+1]
+		ds_2 = np.sqrt(sum(df_2**2))
 
-	print(result)
-	return result
+		d2f = df_2/ds_2 - df_1/ds_1 	# Difference between unit tangent vectors
+		ds2 = (ds_2+ds_1)/2				# Approximate arclength
+
+		curvature = np.sqrt(sum(d2f**2))/ds2
+
+		k[0,i+1] = curvature
+	print(k)
 
 
 def main():
-	np.random.seed(11)
-	x = np.linspace(0, 100, 20)
-	y = np.random.normal(50, 1000, x.shape)
-	plt.plot(x, y, 'o')
+	t = np.linspace(0,100,1000)
 
-	p = lagrange_interpolate(x,y)
+	f = np.array([np.cos(t),np.sin(t),t])
+	discrete_curvature(f)
 
-	p_x, p_y = p.linspace()
-	plt.plot(p_x, p_y, lw=2)
+	t = np.linspace(0,10,200)
+	g = np.array([t**2,t])
+	discrete_curvature(g)
 
-	plt.show()
+	
 if __name__ == '__main__':
 	main()
