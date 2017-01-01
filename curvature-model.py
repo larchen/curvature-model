@@ -11,13 +11,14 @@ def discrete_curvature(f):
 		df_2 = f[:,i+2]-f[:,i+1]
 		ds_2 = np.sqrt(sum(df_2**2))
 
-		d2f = df_2/ds_2 - df_1/ds_1 	# Difference between unit tangent vectors
+		d2f = df_2/ds_2 - df_1/ds_1		# Difference between unit tangent vectors
 		ds2 = (ds_2+ds_1)/2				# Approximate arclength
 
 		curvature = np.sqrt(sum(d2f**2))/ds2
 
 		k[0,i+1] = curvature
 	print(k)
+	return k
 
 
 def main():
@@ -30,6 +31,6 @@ def main():
 	g = np.array([t**2,t])
 	discrete_curvature(g)
 
-	
+
 if __name__ == '__main__':
 	main()
